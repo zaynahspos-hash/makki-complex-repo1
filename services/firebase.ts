@@ -35,11 +35,18 @@ export const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Analytics
-export const analytics = getAnalytics(app);
+// Initialize Analytics (Safe Mode)
+// This prevents the White Screen if ad-blockers block Firebase Analytics
+let analytics;
+try {
+  analytics = getAnalytics(app);
+} catch (error) {
+  console.warn("Firebase Analytics failed to load (likely blocked by ad-blocker):", error);
+}
 
 // Export Auth and Database services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export { analytics };
 
 export default app;
