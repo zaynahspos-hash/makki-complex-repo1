@@ -10,12 +10,6 @@ const TikTokIcon = ({ size = 24, className = "" }: { size?: number, className?: 
   </svg>
 );
 
-const SnapchatIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
-    <path d="M12.003 2c-2.88 0-5.46 1.488-5.46 4.314 0 2.222 1.638 3.318 1.593 4.152-.042.756-1.572.822-1.572 2.37 0 1.296 1.482 1.356 1.05 2.322-.642 1.41-3.666 1.134-3.666 3.12 0 1.032.96 1.632 2.766 1.956 1.398.252 2.928-.27 3.636-.456.666-.174 1.092-.126 1.656 0 .708.186 2.238.708 3.636.456 1.806-.324 2.766-.924 2.766-1.956 0-1.986-3.024-1.71-3.666-3.12-.432-.966 1.05-1.026 1.05-2.322 0-1.548-1.53-1.614-1.572-2.37-.042-.834 1.596-1.932 1.596-4.152C17.463 3.488 14.883 2 12.003 2z"/>
-  </svg>
-);
-
 const WhatsAppIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
     <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.39-4.19-1.15l-.3-.18-3.12.82.83-3.04-.19-.31a8.173 8.173 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24M16.53 14.3c-.23-.11-1.36-.67-1.57-.75-.21-.08-.36-.12-.51.12-.15.25-.59.75-.72.9-.14.15-.26.17-.49.06-.23-.11-.97-.36-1.85-1.14-.69-.6-1.16-1.35-1.29-1.58-.13-.23-.01-.36.1-.47.1-.1.23-.26.35-.4.11-.13.15-.22.23-.37.08-.15.04-.28-.02-.4-.06-.12-.51-1.23-.7-1.69-.19-.45-.38-.39-.52-.4h-.44c-.15 0-.4.06-.61.29-.21.23-.79.77-.79 1.88 0 1.11.81 2.18.92 2.33.11.15 1.59 2.43 3.85 3.4.54.23.96.37 1.29.47.55.18 1.06.15 1.46.09.45-.06 1.36-.56 1.55-1.1.19-.54.19-1 .13-1.1-.06-.11-.22-.17-.45-.29" />
@@ -232,7 +226,7 @@ const Settings = () => {
                    <img src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1770670391/shme3oddvvyl7nmcyup5.webp" alt="Plaza Logo" className="w-full h-full object-cover rounded-2xl shadow-md" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Plaza Manager</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-8">Version 1.2.0 • Build 2024</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-8">Version 1.2.0 • Build 2026</p>
 
                 <div className="max-w-md mx-auto bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-100 dark:border-gray-600">
                    <h4 className="font-bold text-gray-800 dark:text-white mb-1">Zaynahs Developers</h4>
@@ -243,16 +237,16 @@ const Settings = () => {
                    </p>
                    
                    <div className="flex justify-center gap-4">
-                      <a href="https://wa.me/923000000000" target="_blank" rel="noreferrer" className="p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-full transition-colors" title="WhatsApp">
+                      <a href="https://wa.me/923027245937" target="_blank" rel="noreferrer" className="p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-full transition-colors" title="WhatsApp">
                          <WhatsAppIcon size={24} />
                       </a>
-                      <a href="mailto:dev@shoaib.com" className="p-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full transition-colors" title="Email">
+                      <a href="mailto:shoaibzaynah@gmail.com" className="p-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full transition-colors" title="Email">
                          <Mail size={24} />
                       </a>
-                      <a href="#" className="p-3 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors" title="Facebook">
+                      <a href="https://www.facebook.com/shoaibzaynah" target="_blank" rel="noreferrer" className="p-3 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors" title="Facebook">
                          <Facebook size={24} />
                       </a>
-                      <a href="#" className="p-3 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-full transition-colors" title="Instagram">
+                      <a href="https://www.instagram.com/shoaibzaynah" target="_blank" rel="noreferrer" className="p-3 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-full transition-colors" title="Instagram">
                          <Instagram size={24} />
                       </a>
                       <a href="https://www.tiktok.com/@shoaibzaynahh" target="_blank" rel="noreferrer" className="p-3 bg-black hover:bg-gray-800 text-white rounded-full transition-colors" title="TikTok">
