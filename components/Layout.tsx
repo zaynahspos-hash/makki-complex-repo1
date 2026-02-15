@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Store, DollarSign, Wrench, Settings, LogOut, Menu, User as UserIcon, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, Store, DollarSign, Wrench, Settings, LogOut, Menu, User as UserIcon, Moon, Sun, Banknote } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import clsx from 'clsx';
 import { Permission } from '../types';
@@ -20,15 +20,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const allNavItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/', permission: 'dashboard' as Permission },
+    { icon: Banknote, label: 'Revenue', path: '/revenue', permission: 'revenue' as Permission },
     { icon: Store, label: 'Shops', path: '/shops', permission: 'shops' as Permission },
     { icon: DollarSign, label: 'Rent', path: '/rent', permission: 'rent' as Permission },
     { icon: Wrench, label: 'Maintenance', path: '/maintenance', permission: 'maintenance' as Permission },
     { icon: Settings, label: 'Settings', path: '/settings', permission: 'settings' as Permission },
   ];
 
-  const navItems = allNavItems.filter(item => 
-    user?.permissions.includes(item.permission)
-  );
+  // Fallback: If user has 'dashboard' or is admin, show Revenue for now if not explicitly in permissions list
+  // ensuring backward compatibility for existing users
+  const navItems = allNavItems.filter(item => {
+    if (user?.role === 'admin') return true;
+    if (item.permission === 'revenue') return user?.permissions?.includes('dashboard') || user?.permissions?.includes('revenue');
+    return user?.permissions?.includes(item.permission);
+  });
 
   const handleLogout = () => {
     logout();
@@ -74,7 +79,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
               )}
             >
-              <item.icon size={20} />
+              <item.icon size={28} />
               <span>{item.label}</span>
             </Link>
           ))}
@@ -89,7 +94,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Content Wrapper */}
-      <div className="flex-1 md:ml-64 flex flex-col min-h-screen pb-20 md:pb-0">
+      <div className="flex-1 md:ml-64 flex flex-col min-h-screen pb-24 md:pb-0">
         
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 px-4 md:px-8 flex items-center justify-between sticky top-0 z-20 transition-colors duration-200">
@@ -159,26 +164,30 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+        <main className="flex-1 w-full p-4 md:p-8 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 w-full bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center h-16 z-50 px-2 pb-safe transition-colors duration-200">
-        {navItems.slice(0, 5).map((item) => (
+      {/* Mobile Bottom Navigation - High Z-Index & Safe Area Aware */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 w-full bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-around z-[1000] overflow-x-auto no-scrollbar pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:shadow-none min-h-[4rem]">
+        {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             className={clsx(
-              "flex flex-col items-center justify-center w-full h-full space-y-1",
-              isActive(item.path) ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
+              "flex flex-col items-center justify-center min-w-0 flex-1 py-1 transition-colors",
+              isActive(item.path) 
+                ? "text-blue-600 dark:text-blue-400" 
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
             )}
           >
-            <item.icon size={22} strokeWidth={isActive(item.path) ? 2.5 : 2} />
-            <span className="text-[10px] font-medium">{item.label}</span>
+            <div className={clsx("p-1 rounded-xl transition-all flex-shrink-0", isActive(item.path) && "bg-blue-50 dark:bg-gray-700")}>
+               <item.icon size={24} className="block" strokeWidth={isActive(item.path) ? 2.5 : 2} />
+            </div>
+            <span className="text-[10px] font-medium whitespace-nowrap truncate w-full text-center">{item.label}</span>
           </Link>
         ))}
       </div>

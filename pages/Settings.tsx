@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Save, Building, MapPin, Percent, Users, UserPlus, Trash2, Key, Shield, Loader2, Mail, Check, Edit, Info, Store, Facebook, Instagram, Youtube, User as UserIcon, AlertTriangle, X, Phone, Settings as SettingsIcon } from 'lucide-react';
+import { Save, Building, MapPin, Percent, Users, UserPlus, Trash2, Key, Shield, Loader2, Mail, Check, Edit, Info, Store, Facebook, Instagram, Youtube, User as UserIcon, AlertTriangle, X, Phone, Settings as SettingsIcon, Lock } from 'lucide-react';
 import { Permission, User } from '../types';
 
 // Custom SVG Icons for Brands not in Lucide
@@ -17,7 +17,7 @@ const WhatsAppIcon = ({ size = 24, className = "" }: { size?: number, className?
 );
 
 const Settings = () => {
-  const { user, settings, updateSettings, staffList, addStaff, deleteStaff, updateStaff, showToast } = useApp();
+  const { user, settings, updateSettings, staffList, addStaff, deleteStaff, updateStaff, resetUserPassword, showToast } = useApp();
   const [activeTab, setActiveTab] = useState<'general' | 'staff' | 'info'>('general');
   
   // General Form
@@ -33,6 +33,11 @@ const Settings = () => {
     permissions: ['dashboard', 'rent', 'maintenance']
   });
   const [isStaffLoading, setIsStaffLoading] = useState(false);
+
+  // Reset Password Modal
+  const [resetModal, setResetModal] = useState<{ open: boolean, user: User | null }>({ open: false, user: null });
+  const [resetPass, setResetPass] = useState('');
+  const [isResetLoading, setIsResetLoading] = useState(false);
 
   useEffect(() => {
     setFormData(settings);
@@ -61,6 +66,21 @@ const Settings = () => {
     }
   };
 
+  const handlePasswordResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetModal.user) return;
+    setIsResetLoading(true);
+    try {
+        await resetUserPassword(resetModal.user.email, resetPass);
+        setResetModal({ open: false, user: null });
+        setResetPass('');
+    } catch (e) {
+        // toast handled in context
+    } finally {
+        setIsResetLoading(false);
+    }
+  };
+
   const togglePermission = (perm: Permission) => {
     setNewStaff(prev => {
       const perms = prev.permissions || [];
@@ -71,6 +91,9 @@ const Settings = () => {
       }
     });
   };
+
+  // Define all available permissions for selection
+  const availablePermissions: Permission[] = ['dashboard', 'revenue', 'shops', 'rent', 'maintenance', 'settings'];
 
   return (
     <div className="space-y-6 pb-20 md:pb-0">
@@ -206,12 +229,20 @@ const Settings = () => {
                     </div>
 
                     {staff.uid !== user?.uid && (
-                        <button 
-                           onClick={() => { if(confirm("Are you sure? This user will lose access.")) deleteStaff(staff.uid); }}
-                           className="w-full py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center justify-center gap-2"
-                        >
-                           <Trash2 size={16} /> Revoke Access
-                        </button>
+                        <div className="flex gap-3">
+                            <button 
+                               onClick={() => setResetModal({ open: true, user: staff })}
+                               className="flex-1 py-2 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded-lg text-sm font-bold hover:bg-yellow-100 dark:hover:bg-yellow-900/40 transition-colors flex items-center justify-center gap-2"
+                            >
+                               <Key size={16} /> Reset Pass
+                            </button>
+                            <button 
+                               onClick={() => { if(confirm("Are you sure? This user will lose access.")) deleteStaff(staff.uid); }}
+                               className="flex-1 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center justify-center gap-2"
+                            >
+                               <Trash2 size={16} /> Revoke
+                            </button>
+                        </div>
                     )}
                  </div>
               ))}
@@ -296,7 +327,7 @@ const Settings = () => {
                   <div>
                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Access Permissions</label>
                      <div className="grid grid-cols-2 gap-2">
-                        {(['shops', 'rent', 'maintenance'] as const).map(p => (
+                        {availablePermissions.map(p => (
                            <label key={p} className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${newStaff.permissions?.includes(p) ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300' : 'bg-gray-50 border-gray-200 text-gray-600 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400'}`}>
                               <input type="checkbox" className="hidden" checked={newStaff.permissions?.includes(p)} onChange={() => togglePermission(p)} />
                               {newStaff.permissions?.includes(p) ? <Check size={16} /> : <div className="w-4 h-4"/>}
@@ -304,7 +335,6 @@ const Settings = () => {
                            </label>
                         ))}
                      </div>
-                     <p className="text-xs text-gray-400 mt-2">* Dashboard access is granted by default.</p>
                   </div>
 
                   <button 
@@ -314,6 +344,51 @@ const Settings = () => {
                   >
                      {isStaffLoading ? <Loader2 className="animate-spin" /> : 'Create Account'}
                   </button>
+               </form>
+            </div>
+         </div>
+      )}
+
+      {/* RESET PASSWORD MODAL */}
+      {resetModal.open && resetModal.user && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6 relative">
+               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Reset Password</h3>
+               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  For <strong>{resetModal.user.displayName}</strong>. <br/>
+                  Entering a new password will update their record and send a reset link to <strong>{resetModal.user.email}</strong>.
+               </p>
+               
+               <form onSubmit={handlePasswordResetSubmit} className="space-y-4">
+                  <div>
+                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password (Optional)</label>
+                     <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input 
+                            type="text" 
+                            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" 
+                            placeholder="Leave empty to just send link"
+                            value={resetPass}
+                            onChange={(e) => setResetPass(e.target.value)} 
+                        />
+                     </div>
+                  </div>
+                  <div className="flex gap-2 justify-end">
+                     <button 
+                       type="button" 
+                       onClick={() => { setResetModal({ open: false, user: null }); setResetPass(''); }}
+                       className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                     >
+                       Cancel
+                     </button>
+                     <button 
+                       type="submit"
+                       disabled={isResetLoading}
+                       className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 flex items-center gap-2 font-bold shadow-md shadow-yellow-200 dark:shadow-none"
+                     >
+                       {isResetLoading ? <Loader2 size={16} className="animate-spin" /> : 'Reset & Send Link'}
+                     </button>
+                  </div>
                </form>
             </div>
          </div>

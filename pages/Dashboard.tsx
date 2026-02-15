@@ -1,23 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Store, DollarSign, TrendingUp, Calendar, ChevronRight, Wrench } from 'lucide-react';
+import { Store, DollarSign, TrendingUp, Calendar, ChevronRight, Wrench, ArrowUpRight, ArrowDownRight, Wallet } from 'lucide-react';
 
 const Dashboard = () => {
   const { shops, rentRecords, maintenanceCollections, settings } = useApp();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'rent' | 'maintenance'>('rent');
 
+  // --- DATA CALCULATIONS --- //
+
+  // 1. Occupancy
   const totalShops = shops.length;
   const occupiedShops = shops.filter(s => s.status === 'Occupied').length;
-  
-  const totalRentCollected = rentRecords.reduce((acc, curr) => acc + (curr.collected || 0), 0);
-  const totalMaintCollected = maintenanceCollections.reduce((acc, curr) => acc + (curr.collected || 0), 0);
-  const totalRevenue = totalRentCollected + totalMaintCollected;
+  const occupancyRate = totalShops > 0 ? Math.round((occupiedShops / totalShops) * 100) : 0;
 
-  const pendingRent = rentRecords.reduce((acc, curr) => acc + ((curr.amount || 0) - (curr.collected || 0)), 0);
-  const pendingMaintMoney = maintenanceCollections.reduce((acc, curr) => acc + ((curr.amount || 0) - (curr.collected || 0)), 0);
-  const totalPendingDues = pendingRent + pendingMaintMoney;
+  // 2. Helper: Date Parser (Matches Revenue.tsx logic for consistency)
+  const parseDate = (dateStr: string) => {
+    if (!dateStr) return new Date(0);
+    let d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d;
+    
+    // Handle DD/MM/YYYY or DD-MM-YYYY
+    const dmyMatch = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (dmyMatch) {
+      const day = parseInt(dmyMatch[1], 10);
+      const month = parseInt(dmyMatch[2], 10) - 1;
+      const year = parseInt(dmyMatch[3], 10);
+      d = new Date(year, month, day);
+      if (!isNaN(d.getTime())) return d;
+    }
+    return new Date(0);
+  };
+
+  // 3. Revenue: Calculate THIS MONTH'S Revenue based on actual transaction dates
+  const { revenueThisMonth, rentThisMonth, maintThisMonth } = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    let r = 0;
+    let m = 0;
+
+    // Sum Rent Transactions for current month
+    rentRecords.forEach(rec => {
+        if(rec.transactions) {
+            rec.transactions.forEach(tx => {
+                const d = parseDate(tx.date);
+                if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                    r += (typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount) || 0;
+                }
+            });
+        }
+    });
+
+    // Sum Maintenance Transactions for current month
+    maintenanceCollections.forEach(rec => {
+        if(rec.transactions) {
+            rec.transactions.forEach(tx => {
+                const d = parseDate(tx.date);
+                if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                    m += (typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount) || 0;
+                }
+            });
+        }
+    });
+
+    return { revenueThisMonth: r + m, rentThisMonth: r, maintThisMonth: m };
+  }, [rentRecords, maintenanceCollections]);
+
+  // 4. Pending Dues: Total outstanding balance (All Time)
+  const totalPendingDues = useMemo(() => {
+      const rentPending = rentRecords.reduce((acc, curr) => acc + ((curr.amount || 0) - (curr.collected || 0)), 0);
+      const maintPending = maintenanceCollections.reduce((acc, curr) => acc + ((curr.amount || 0) - (curr.collected || 0)), 0);
+      return rentPending + maintPending;
+  }, [rentRecords, maintenanceCollections]);
+
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
@@ -30,15 +88,20 @@ const Dashboard = () => {
     }
   };
 
-  const StatCard = ({ title, value, subtext, icon: Icon, color }: any) => (
-    <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-start justify-between hover:shadow-md transition-all">
-      <div className="flex-1 min-w-0 pr-2">
-        <p className="text-gray-500 dark:text-gray-400 text-sm font-medium truncate">{title}</p>
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate">{value}</h3>
-        {subtext && <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">{subtext}</p>}
+  const StatCard = ({ title, value, subtext, icon: Icon, colorClass, bgClass }: any) => (
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 relative overflow-hidden group hover:shadow-md transition-all">
+      <div className={`absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity ${colorClass}`}>
+        <Icon size={64} />
       </div>
-      <div className={`p-3 rounded-xl shrink-0 ${color}`}>
-        <Icon className="w-6 h-6 text-white" />
+      <div className="relative z-10 flex flex-col h-full justify-between">
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${bgClass} ${colorClass}`}>
+           <Icon size={24} />
+        </div>
+        <div>
+           <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">{title}</p>
+           <h3 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{value}</h3>
+           {subtext && <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 font-medium flex items-center gap-1">{subtext}</p>}
+        </div>
       </div>
     </div>
   );
@@ -46,101 +109,131 @@ const Dashboard = () => {
   const displayedRecords = activeTab === 'rent' ? rentRecords.slice(0, 5) : maintenanceCollections.slice(0, 5);
 
   return (
-    <div className="space-y-6 pb-20 md:pb-0">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-8 pb-24 md:pb-8">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{settings.plazaName}</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">Overview of {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{settings.plazaName}</h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+             Financial Overview • {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+          </p>
         </div>
-        <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-lg text-sm font-medium w-fit">
+        <div className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-4 py-2 rounded-xl text-sm font-medium shadow-sm">
           <Calendar size={16} />
-          <span>{new Date().toDateString()}</span>
+          <span>{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard 
-          title="Total Revenue" 
-          value={`Rs. ${(totalRevenue || 0).toLocaleString()}`} 
-          subtext={`Rent: ${(totalRentCollected || 0).toLocaleString()} + Maint: ${(totalMaintCollected || 0).toLocaleString()}`}
-          icon={DollarSign} 
-          color="bg-green-500" 
+          title="Revenue (This Month)" 
+          value={`Rs. ${(revenueThisMonth || 0).toLocaleString()}`} 
+          subtext={
+            <>
+               <span className="text-green-600 dark:text-green-400 flex items-center"><ArrowUpRight size={12}/> Rent: {rentThisMonth.toLocaleString()}</span>
+               <span className="mx-1">•</span>
+               <span>Maint: {maintThisMonth.toLocaleString()}</span>
+            </>
+          }
+          icon={Wallet} 
+          colorClass="text-green-600"
+          bgClass="bg-green-100 dark:bg-green-900/30"
         />
         <StatCard 
-          title="Occupancy" 
-          value={`${occupiedShops}/${totalShops}`} 
-          subtext={`${totalShops > 0 ? Math.round((occupiedShops/totalShops)*100) : 0}% Occupied`}
+          title="Occupancy Rate" 
+          value={`${occupancyRate}%`} 
+          subtext={`${occupiedShops} of ${totalShops} Units Occupied`}
           icon={Store} 
-          color="bg-blue-500" 
+          colorClass="text-blue-600"
+          bgClass="bg-blue-100 dark:bg-blue-900/30"
         />
         <StatCard 
-          title="Pending Dues" 
+          title="Total Outstanding" 
           value={`Rs. ${(totalPendingDues || 0).toLocaleString()}`} 
-          subtext="Unpaid Rent & Maintenance"
+          subtext={<span className="text-orange-600 dark:text-orange-400">Total Pending Dues (All Time)</span>}
           icon={TrendingUp} 
-          color="bg-orange-400" 
+          colorClass="text-orange-600"
+          bgClass="bg-orange-100 dark:bg-orange-900/30"
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 md:p-6 transition-all">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-             <div className="flex items-center gap-4 bg-gray-100 dark:bg-gray-700/50 p-1 rounded-xl w-full sm:w-auto">
-                <button 
-                  onClick={() => setActiveTab('rent')}
-                  className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'rent' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-300 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-                >
-                  <DollarSign size={16} /> Rent
-                </button>
-                <button 
-                  onClick={() => setActiveTab('maintenance')}
-                  className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'maintenance' ? 'bg-white dark:bg-gray-600 text-purple-600 dark:text-purple-300 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-                >
-                  <Wrench size={16} /> Maintenance
-                </button>
-             </div>
-             
-             <button 
-                onClick={() => navigate(activeTab === 'rent' ? '/rent' : '/maintenance')}
-                className="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline focus:outline-none flex items-center gap-1 self-end sm:self-auto"
-             >
-                View All {activeTab === 'rent' ? 'Rent' : 'Maintenance'} <ChevronRight size={16} />
-             </button>
-          </div>
+      {/* Recent Activity Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+           <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recent Bills</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Latest generated bills and their status.</p>
+           </div>
+           
+           <div className="flex items-center gap-2">
+               <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700/50 p-1 rounded-lg">
+                  <button 
+                    onClick={() => setActiveTab('rent')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'rent' ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
+                  >
+                    Rent
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('maintenance')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'maintenance' ? 'bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
+                  >
+                    Maint.
+                  </button>
+               </div>
+               <button 
+                  onClick={() => navigate(activeTab === 'rent' ? '/rent' : '/maintenance')}
+                  className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+               >
+                  <ArrowUpRight size={18} />
+               </button>
+           </div>
+        </div>
 
-          <div className="space-y-3">
-            {displayedRecords.map(record => (
-              <div key={record.id} className="flex items-start justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-600 gap-3">
-                
-                {/* Left Side: Shop Info */}
-                <div className="flex items-start space-x-3 flex-1 min-w-0">
-                  <div className={`min-w-[2.5rem] max-w-[6rem] sm:max-w-[8rem] h-auto px-2 py-1 rounded-lg flex items-center justify-center shrink-0 font-bold text-xs border mt-0.5 break-words text-center ${
-                    activeTab === 'rent'
-                      ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'
-                      : 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800'
-                  }`}>
-                    {record.shopNumber}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 break-words leading-snug">{record.ownerName}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{formatDate(record.month)} • {activeTab === 'rent' ? 'Rent' : 'Maintenance'}</p>
-                  </div>
+        <div className="space-y-4">
+          {displayedRecords.map(record => (
+            <div key={record.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700/50 gap-4 hover:border-gray-200 dark:hover:border-gray-600 transition-colors cursor-pointer" onClick={() => navigate(activeTab === 'rent' ? '/rent' : '/maintenance')}>
+              
+              {/* Left Side: Shop Info */}
+              <div className="flex items-center gap-4">
+                <div className={`h-10 min-w-[2.5rem] w-auto px-2 rounded-lg flex items-center justify-center shrink-0 font-bold text-sm border ${
+                  activeTab === 'rent'
+                    ? 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800'
+                    : 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/40 dark:text-purple-300 dark:border-purple-800'
+                }`}>
+                  <span className="truncate max-w-[80px]">{record.shopNumber}</span>
                 </div>
-
-                {/* Right Side: Amount & Status */}
-                <div className="text-right shrink-0 ml-2">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white whitespace-nowrap">Rs. {(record.amount || 0).toLocaleString()}</p>
-                  <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full font-medium mt-1 ${
-                    record.status === 'Paid' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
-                    record.status === 'Pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-                  }`}>
-                    {record.status}
-                  </span>
+                <div>
+                  <h4 className="font-bold text-sm text-gray-900 dark:text-white line-clamp-1">{record.ownerName}</h4>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">
+                    {formatDate(record.month)}
+                  </p>
                 </div>
               </div>
-            ))}
-            {displayedRecords.length === 0 && <p className="text-center text-gray-400 dark:text-gray-500 py-8 text-sm">No recent transactions found.</p>}
-          </div>
+
+              {/* Right Side: Amount & Status */}
+              <div className="flex items-center justify-between sm:justify-end gap-6 border-t sm:border-t-0 border-gray-200 dark:border-gray-700 pt-3 sm:pt-0">
+                <div className="text-right">
+                   <p className="font-bold text-gray-900 dark:text-white">Rs. {(record.amount || 0).toLocaleString()}</p>
+                   {((record.amount || 0) - (record.collected || 0)) > 0 && (
+                       <p className="text-[10px] text-red-500 font-medium">Due: {((record.amount || 0) - (record.collected || 0)).toLocaleString()}</p>
+                   )}
+                </div>
+                <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
+                  record.status === 'Paid' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900' :
+                  record.status === 'Pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-900' : 
+                  'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900'
+                }`}>
+                  {record.status}
+                </div>
+              </div>
+            </div>
+          ))}
+          {displayedRecords.length === 0 && (
+             <div className="text-center py-10">
+                <p className="text-gray-400 dark:text-gray-500 text-sm font-medium">No activity recorded yet.</p>
+             </div>
+          )}
         </div>
       </div>
     </div>

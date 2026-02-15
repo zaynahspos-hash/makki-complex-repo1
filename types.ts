@@ -1,6 +1,6 @@
 export type Role = 'admin' | 'staff';
 
-export type Permission = 'dashboard' | 'shops' | 'rent' | 'maintenance' | 'settings';
+export type Permission = 'dashboard' | 'shops' | 'rent' | 'maintenance' | 'settings' | 'revenue';
 
 export interface User {
   uid: string;

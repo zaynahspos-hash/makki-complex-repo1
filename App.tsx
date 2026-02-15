@@ -8,6 +8,7 @@ import Shops from './pages/Shops';
 import Rent from './pages/Rent';
 import Maintenance from './pages/Maintenance';
 import Settings from './pages/Settings';
+import Revenue from './pages/Revenue';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -34,6 +35,11 @@ const AppRoutes = () => {
       <Route path="/" element={
         <ProtectedRoute>
           <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/revenue" element={
+        <ProtectedRoute>
+          <Revenue />
         </ProtectedRoute>
       } />
       <Route path="/shops" element={
