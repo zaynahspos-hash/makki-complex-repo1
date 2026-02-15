@@ -1,7 +1,6 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Search, Plus, MapPin, DollarSign, Wrench, Phone, Mail, MoreHorizontal, Edit, Trash2, X, Store } from 'lucide-react';
+import { Search, Plus, MapPin, DollarSign, Wrench, Phone, Mail, MoreHorizontal, Edit, Trash2, X, Store, Loader2 } from 'lucide-react';
 import { Shop } from '../types';
 
 const Shops = () => {
@@ -10,6 +9,7 @@ const Shops = () => {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Menu State
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -70,7 +70,10 @@ const Shops = () => {
   const handleSaveShop = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newShop.shopNumber || !newShop.ownerName) return;
+    if (isSubmitting) return; // Prevent double submission
     
+    setIsSubmitting(true);
+
     // Convert numeric fields back to pure numbers for saving (default to 0 if empty string)
     const shopToSave = {
        ...newShop,
@@ -105,6 +108,8 @@ const Shops = () => {
       setEditingId(null);
     } catch (error: any) {
       // Error is logged in context, but we ensure UI reflects failure if context doesn't catch all
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -250,7 +255,7 @@ const Shops = () => {
                 <Store size={20} className="text-blue-600"/>
                 {editingId ? 'Edit Shop Details' : 'Add New Shop'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-600 rounded-full p-1">
+              <button onClick={() => !isSubmitting && setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-600 rounded-full p-1" disabled={isSubmitting}>
                 <X size={16} />
               </button>
             </div>
@@ -351,9 +356,9 @@ const Shops = () => {
               </div>
 
               <div className="pt-4 flex gap-3 shrink-0">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-                <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-none transition-colors">
-                    {editingId ? 'Update Shop' : 'Create Shop'}
+                <button type="button" onClick={() => !isSubmitting && setIsModalOpen(false)} className="flex-1 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" disabled={isSubmitting}>Cancel</button>
+                <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-none transition-colors flex items-center justify-center gap-2" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="animate-spin" /> : (editingId ? 'Update Shop' : 'Create Shop')}
                 </button>
               </div>
             </form>
