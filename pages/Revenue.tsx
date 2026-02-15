@@ -1,6 +1,7 @@
+
 import React, { useState, useMemo, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { Banknote, Calendar, Search, Download, TrendingUp, Filter, User, ArrowUpRight, ArrowDownRight, FilePlus } from 'lucide-react';
+import { Banknote, Calendar, Search, Download, TrendingUp, Filter, User, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { PaymentTransaction } from '../types';
 
 interface FlatTransaction extends PaymentTransaction {
@@ -56,10 +57,6 @@ const Revenue = () => {
   const [endDate, setEndDate] = useState(getLocalDateString(endOfMonth));
   const [activeQuickFilter, setActiveQuickFilter] = useState<'today' | '7d' | '15d' | 'thisMonth' | 'lastMonth' | 'thisYear' | 'allTime' | 'custom'>('thisMonth');
   
-  // Export Modal State
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [exportDates, setExportDates] = useState({ start: getLocalDateString(startOfMonth), end: getLocalDateString(endOfMonth) });
-
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'All' | 'Rent' | 'Maintenance'>('All');
@@ -174,38 +171,14 @@ const Revenue = () => {
 
   const totalRevenue = filteredTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 
-  const openExportModal = () => {
-    setExportDates({ start: startDate, end: endDate });
-    setIsExportModalOpen(true);
-  };
-
-  const confirmExport = () => {
-      const [startYear, startMonth, startDay] = exportDates.start.split('-').map(Number);
-      const start = new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0);
-      const [endYear, endMonth, endDay] = exportDates.end.split('-').map(Number);
-      const end = new Date(endYear, endMonth - 1, endDay, 23, 59, 59, 999);
-
-      // Filter based on Modal dates (ignoring current view filters for broader export capability, or we could respect them. 
-      // User likely wants what they see but maybe different dates. Let's keep search/type filters but use modal dates)
-      const dataToExport = allTransactions.filter(tx => {
-        const txDate = tx.rawDate;
-        const inRange = txDate >= start && txDate <= end;
-        
-        // Optional: Respect Search/Type filters from main view? 
-        // Usually export modal overrides dates but might want to keep "Rent only" filter.
-        // Let's keep the type filter if set, but ignore search for a cleaner report unless needed.
-        const matchesType = typeFilter === 'All' || tx.type === typeFilter;
-        
-        return inRange && matchesType;
-      });
-
-      if (dataToExport.length === 0) {
-        showToast("No records found for selected dates.", "error");
+  const handleExport = () => {
+      if (filteredTransactions.length === 0) {
+        showToast("No records match the current filters.", "error");
         return;
       }
 
       const headers = ['Date', 'Type', 'Shop No', 'Owner', 'Amount', 'Collected By', 'Note'];
-      const rows = dataToExport.map(tx => [
+      const rows = filteredTransactions.map(tx => [
           `"${tx.date}"`,
           tx.type,
           tx.shopNumber,
@@ -219,13 +192,12 @@ const Revenue = () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `revenue_${exportDates.start}_to_${exportDates.end}.csv`);
+      link.setAttribute('download', `revenue_export_${startDate}_to_${endDate}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
-      setIsExportModalOpen(false);
-      showToast("Revenue report downloaded successfully", "success");
+      showToast("Revenue report downloaded", "success");
   };
 
   // Helper to safely open picker
@@ -253,7 +225,7 @@ const Revenue = () => {
            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Revenue</h2>
            <p className="text-gray-500 dark:text-gray-400">Financial Overview</p>
         </div>
-        <button onClick={openExportModal} className="w-full md:w-auto bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors shadow-sm">
+        <button onClick={handleExport} className="w-full md:w-auto bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors shadow-sm">
             <Download size={18} /> Export CSV
         </button>
       </div>
@@ -336,7 +308,7 @@ const Revenue = () => {
           ))}
       </div>
 
-      {/* SEARCH BAR (Identical to Rent) */}
+      {/* SEARCH BAR & TYPE FILTER */}
       <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 transition-colors">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -464,64 +436,6 @@ const Revenue = () => {
             </table>
         </div>
       </div>
-
-      {/* EXPORT MODAL */}
-      {isExportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
-           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6 relative flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
-              <div className="flex justify-between items-center mb-4 shrink-0">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Export Report</h3>
-                <button onClick={() => setIsExportModalOpen(false)} className="text-gray-400 hover:text-gray-600 bg-gray-100 dark:bg-gray-700 dark:hover:text-gray-300 rounded-full p-1 transition-colors">
-                  <FilePlus className="rotate-45" size={16}/>
-                </button>
-              </div>
-              <div className="space-y-6">
-                 <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-2 block">Start Date</label>
-                        <div className="relative">
-                           <input 
-                              type="date" 
-                              className="w-full p-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 font-medium cursor-pointer" 
-                              value={exportDates.start} 
-                              onChange={e => setExportDates({...exportDates, start: e.target.value})}
-                              onClick={(e) => {
-                                try {
-                                  if ('showPicker' in HTMLInputElement.prototype) e.currentTarget.showPicker();
-                                } catch (err) {}
-                              }} 
-                           />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-2 block">End Date</label>
-                        <div className="relative">
-                            <input 
-                              type="date" 
-                              className="w-full p-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 font-medium cursor-pointer" 
-                              value={exportDates.end} 
-                              onChange={e => setExportDates({...exportDates, end: e.target.value})} 
-                              onClick={(e) => {
-                                try {
-                                  if ('showPicker' in HTMLInputElement.prototype) e.currentTarget.showPicker();
-                                } catch (err) {}
-                              }} 
-                            />
-                        </div>
-                    </div>
-                 </div>
-                 
-                 <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800 text-center">
-                    <p className="text-xs text-blue-600 dark:text-blue-300 font-medium">This will export all transactions between the selected dates.</p>
-                 </div>
-
-                 <button onClick={confirmExport} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-200 dark:shadow-none hover:bg-blue-700 transition-all">
-                    Download CSV
-                 </button>
-              </div>
-           </div>
-        </div>
-      )}
     </div>
   );
 };

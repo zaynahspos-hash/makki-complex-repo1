@@ -18,6 +18,7 @@ export interface Shop {
   shopNumber: string;
   floor: string;
   ownerName: string;
+  cnic?: string;
   phone: string;
   email?: string;
   monthlyRent: number;

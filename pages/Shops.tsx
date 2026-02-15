@@ -20,6 +20,7 @@ const Shops = () => {
     shopNumber: '',
     floor: 'Ground',
     ownerName: '',
+    cnic: '',
     phone: '',
     email: '',
     status: 'Occupied',
@@ -51,6 +52,7 @@ const Shops = () => {
         shopNumber: '',
         floor: 'Ground',
         ownerName: '',
+        cnic: '',
         phone: '',
         email: '',
         status: 'Occupied',
@@ -99,6 +101,7 @@ const Shops = () => {
         shopNumber: '', 
         floor: 'Ground', 
         ownerName: '', 
+        cnic: '',
         phone: '', 
         email: '', 
         status: 'Occupied', 
@@ -295,6 +298,12 @@ const Shops = () => {
                 <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Owner Name</label>
                 <input required type="text" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
                   value={newShop.ownerName} onChange={e => setNewShop({...newShop, ownerName: e.target.value})} placeholder="Full Name" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">CNIC (Optional)</label>
+                <input type="text" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
+                  value={newShop.cnic || ''} onChange={e => setNewShop({...newShop, cnic: e.target.value})} placeholder="e.g. 42101-1234567-1" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
