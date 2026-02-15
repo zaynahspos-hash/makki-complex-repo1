@@ -54,7 +54,7 @@ const Revenue = () => {
 
   const [startDate, setStartDate] = useState(getLocalDateString(startOfMonth));
   const [endDate, setEndDate] = useState(getLocalDateString(endOfMonth));
-  const [activeQuickFilter, setActiveQuickFilter] = useState<'today' | '7d' | '15d' | 'thisMonth' | 'lastMonth' | 'custom'>('thisMonth');
+  const [activeQuickFilter, setActiveQuickFilter] = useState<'today' | '7d' | '15d' | 'thisMonth' | 'lastMonth' | 'thisYear' | 'allTime' | 'custom'>('thisMonth');
   
   // Export Modal State
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -110,7 +110,7 @@ const Revenue = () => {
   }, [rentRecords, maintenanceCollections]);
 
   // --- FILTERING ---
-  const applyFilter = (filter: 'today' | '7d' | '15d' | 'thisMonth' | 'lastMonth') => {
+  const applyFilter = (filter: 'today' | '7d' | '15d' | 'thisMonth' | 'lastMonth' | 'thisYear' | 'allTime') => {
     const end = new Date();
     let start = new Date();
     
@@ -127,6 +127,14 @@ const Revenue = () => {
     } else if (filter === 'lastMonth') {
       start = new Date(end.getFullYear(), end.getMonth() - 1, 1);
       end.setDate(0); 
+    } else if (filter === 'thisYear') {
+      start = new Date(end.getFullYear(), 0, 1);
+      const lastDay = new Date(end.getFullYear(), 11, 31);
+      end.setTime(lastDay.getTime());
+    } else if (filter === 'allTime') {
+      start = new Date(2020, 0, 1);
+      const lastDay = new Date(end.getFullYear(), 11, 31);
+      end.setTime(lastDay.getTime());
     }
     
     setStartDate(getLocalDateString(start));
@@ -177,11 +185,17 @@ const Revenue = () => {
       const [endYear, endMonth, endDay] = exportDates.end.split('-').map(Number);
       const end = new Date(endYear, endMonth - 1, endDay, 23, 59, 59, 999);
 
-      // Filter based on Modal dates
+      // Filter based on Modal dates (ignoring current view filters for broader export capability, or we could respect them. 
+      // User likely wants what they see but maybe different dates. Let's keep search/type filters but use modal dates)
       const dataToExport = allTransactions.filter(tx => {
         const txDate = tx.rawDate;
         const inRange = txDate >= start && txDate <= end;
+        
+        // Optional: Respect Search/Type filters from main view? 
+        // Usually export modal overrides dates but might want to keep "Rent only" filter.
+        // Let's keep the type filter if set, but ignore search for a cleaner report unless needed.
         const matchesType = typeFilter === 'All' || tx.type === typeFilter;
+        
         return inRange && matchesType;
       });
 
@@ -249,30 +263,42 @@ const Revenue = () => {
          
          {/* Date Range Inputs (Compact) */}
          <div className="flex-1 flex gap-2">
-            <div 
-              className="relative flex-1 min-w-0 cursor-pointer group"
-              onClick={() => openPicker(startDateRef)}
-            >
-               <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none text-gray-400 group-hover:text-blue-500 transition-colors"><Calendar size={14} /></div>
+            <div className="relative flex-1 min-w-0">
+               <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none text-gray-400"><Calendar size={14} /></div>
                <input 
                   ref={startDateRef} 
                   type="date" 
                   value={startDate} 
                   onChange={(e) => handleCustomDateChange('start', e.target.value)} 
+                  onClick={(e) => {
+                    try {
+                      if ('showPicker' in HTMLInputElement.prototype) {
+                        e.currentTarget.showPicker();
+                      }
+                    } catch (error) {
+                      console.log('Picker not supported or blocked', error);
+                    }
+                  }}
                   className="w-full pl-8 pr-2 py-2 text-xs font-bold border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer min-w-0" 
                 />
             </div>
             <span className="self-center text-gray-400">-</span>
-            <div 
-              className="relative flex-1 min-w-0 cursor-pointer group"
-              onClick={() => openPicker(endDateRef)}
-            >
-               <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none text-gray-400 group-hover:text-blue-500 transition-colors"><Calendar size={14} /></div>
+            <div className="relative flex-1 min-w-0">
+               <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none text-gray-400"><Calendar size={14} /></div>
                <input 
                   ref={endDateRef} 
                   type="date" 
                   value={endDate} 
                   onChange={(e) => handleCustomDateChange('end', e.target.value)} 
+                  onClick={(e) => {
+                    try {
+                      if ('showPicker' in HTMLInputElement.prototype) {
+                         e.currentTarget.showPicker();
+                      }
+                    } catch (error) {
+                      console.log('Picker not supported or blocked', error);
+                    }
+                  }}
                   className="w-full pl-8 pr-2 py-2 text-xs font-bold border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer min-w-0" 
                />
             </div>
@@ -287,7 +313,15 @@ const Revenue = () => {
 
       {/* QUICK FILTERS (Horizontal Scroll) */}
       <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-          {[{ id: 'today', label: 'Today' }, { id: '7d', label: '7 Days' }, { id: '15d', label: '15 Days' }, { id: 'thisMonth', label: 'This Month' }, { id: 'lastMonth', label: 'Last Month' }].map(btn => (
+          {[
+            { id: 'today', label: 'Today' }, 
+            { id: '7d', label: '7 Days' }, 
+            { id: '15d', label: '15 Days' }, 
+            { id: 'thisMonth', label: 'This Month' }, 
+            { id: 'lastMonth', label: 'Last Month' },
+            { id: 'thisYear', label: 'This Year' },
+            { id: 'allTime', label: 'All Time' }
+          ].map(btn => (
               <button 
                 key={btn.id} 
                 onClick={() => applyFilter(btn.id as any)} 
