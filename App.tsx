@@ -56,6 +56,8 @@ const AppRoutes = () => {
           <Settings />
         </ProtectedRoute>
       } />
+      {/* Catch-all route to handle 404s or unexpected paths in previews */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
