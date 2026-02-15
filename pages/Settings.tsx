@@ -271,7 +271,7 @@ const Settings = () => {
                       <a href="https://wa.me/923027245937" target="_blank" rel="noreferrer" className="p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-full transition-colors" title="WhatsApp">
                          <WhatsAppIcon size={24} />
                       </a>
-                      <a href="mailto:shoaizaynah@gmail.com" className="p-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full transition-colors" title="Email">
+                      <a href="mailto:shoaibzaynah@gmail.com" className="p-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full transition-colors" title="Email">
                          <Mail size={24} />
                       </a>
                       <a href="https://www.facebook.com/shoaibzaynah" target="_blank" rel="noreferrer" className="p-3 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors" title="Facebook">
