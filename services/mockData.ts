@@ -1,3 +1,4 @@
+
 import { Shop, RentRecord, MaintenanceCollection, RepairRecord, User } from '../types';
 
 // Helper to get current month strings dynamicallly
@@ -30,11 +31,11 @@ export const mockStaffList: User[] = [
 ];
 
 export const mockShops: Shop[] = [
-  { id: '1', shopNumber: '101', floor: 1, ownerName: 'Ali Electronics', phone: '0300-1234567', email: 'ali@test.com', monthlyRent: 45000, monthlyMaintenance: 5000, status: 'Occupied' },
-  { id: '2', shopNumber: '102', floor: 1, ownerName: 'Bilal Fabrics', phone: '0321-9876543', monthlyRent: 50000, monthlyMaintenance: 5000, status: 'Occupied' },
-  { id: '3', shopNumber: '201', floor: 2, ownerName: 'Cyber Cafe', phone: '0333-5555555', email: 'cafe@test.com', monthlyRent: 35000, monthlyMaintenance: 4000, status: 'Occupied' },
-  { id: '4', shopNumber: '202', floor: 2, ownerName: 'Beauty Salon', phone: '0345-1112222', monthlyRent: 35000, monthlyMaintenance: 4000, status: 'Occupied' },
-  { id: '5', shopNumber: '103', floor: 1, ownerName: 'Pharmacy Plus', phone: '0300-7778888', monthlyRent: 48000, monthlyMaintenance: 5000, status: 'Occupied' },
+  { id: '1', shopNumber: '101', floor: '1', ownerName: 'Ali Electronics', phone: '0300-1234567', email: 'ali@test.com', monthlyRent: 45000, monthlyMaintenance: 5000, status: 'Occupied' },
+  { id: '2', shopNumber: '102', floor: '1', ownerName: 'Bilal Fabrics', phone: '0321-9876543', monthlyRent: 50000, monthlyMaintenance: 5000, status: 'Occupied' },
+  { id: '3', shopNumber: '201', floor: '2', ownerName: 'Cyber Cafe', phone: '0333-5555555', email: 'cafe@test.com', monthlyRent: 35000, monthlyMaintenance: 4000, status: 'Occupied' },
+  { id: '4', shopNumber: '202', floor: '2', ownerName: 'Beauty Salon', phone: '0345-1112222', monthlyRent: 35000, monthlyMaintenance: 4000, status: 'Occupied' },
+  { id: '5', shopNumber: '103', floor: '1', ownerName: 'Pharmacy Plus', phone: '0300-7778888', monthlyRent: 48000, monthlyMaintenance: 5000, status: 'Occupied' },
 ];
 
 export const mockRent: RentRecord[] = [

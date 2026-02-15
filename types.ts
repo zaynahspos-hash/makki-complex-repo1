@@ -1,3 +1,4 @@
+
 export type Role = 'admin' | 'staff';
 
 export type Permission = 'dashboard' | 'shops' | 'rent' | 'maintenance' | 'settings' | 'revenue';
@@ -15,7 +16,7 @@ export interface User {
 export interface Shop {
   id: string;
   shopNumber: string;
-  floor: number;
+  floor: string;
   ownerName: string;
   phone: string;
   email?: string;

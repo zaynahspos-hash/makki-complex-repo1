@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { DollarSign, CheckCircle, AlertCircle, Clock, CalendarPlus, MessageCircle, Wallet, History, Search, Filter, User, Calendar, ChevronDown, ChevronUp, Download, FilePlus, Check } from 'lucide-react';
@@ -83,6 +84,12 @@ const Rent = () => {
     const [y, m] = dateStr.split('-');
     const date = new Date(parseInt(y), parseInt(m) - 1);
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+  };
+
+  const formatFloor = (floor: string) => {
+    if (floor === 'Basement') return 'Basement';
+    if (floor === 'Ground') return 'Ground Floor';
+    return `Floor ${floor}`;
   };
 
   const handleGenerateDues = () => {
@@ -331,7 +338,7 @@ const Rent = () => {
                         </div>
                         <div className="min-w-0">
                            <div className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[150px]">{shop.ownerName}</div>
-                           <div className="text-xs text-gray-500 dark:text-gray-400">Floor {shop.floor}</div>
+                           <div className="text-xs text-gray-500 dark:text-gray-400">{formatFloor(shop.floor)}</div>
                         </div>
                       </div>
                     </td>

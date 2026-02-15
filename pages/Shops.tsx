@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Search, Plus, MapPin, DollarSign, Wrench, Phone, Mail, MoreHorizontal, Edit, Trash2, X, Store } from 'lucide-react';
@@ -15,9 +16,9 @@ const Shops = () => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Form State
-  const [newShop, setNewShop] = useState<Partial<Shop> & { monthlyRent: number | string, monthlyMaintenance: number | string, floor: number | string }>({
+  const [newShop, setNewShop] = useState<Partial<Shop> & { monthlyRent: number | string, monthlyMaintenance: number | string, floor: string }>({
     shopNumber: '',
-    floor: 1,
+    floor: 'Ground',
     ownerName: '',
     phone: '',
     email: '',
@@ -48,7 +49,7 @@ const Shops = () => {
     setEditingId(null);
     setNewShop({
         shopNumber: '',
-        floor: 1,
+        floor: 'Ground',
         ownerName: '',
         phone: '',
         email: '',
@@ -73,7 +74,7 @@ const Shops = () => {
     // Convert numeric fields back to pure numbers for saving (default to 0 if empty string)
     const shopToSave = {
        ...newShop,
-       floor: Number(newShop.floor) || 0,
+       floor: newShop.floor || 'Ground',
        monthlyRent: Number(newShop.monthlyRent) || 0,
        monthlyMaintenance: Number(newShop.monthlyMaintenance) || 0,
     };
@@ -93,7 +94,7 @@ const Shops = () => {
       setIsModalOpen(false);
       setNewShop({ 
         shopNumber: '', 
-        floor: 1, 
+        floor: 'Ground', 
         ownerName: '', 
         phone: '', 
         email: '', 
@@ -105,6 +106,12 @@ const Shops = () => {
     } catch (error: any) {
       // Error is logged in context, but we ensure UI reflects failure if context doesn't catch all
     }
+  };
+
+  const formatFloor = (floor: string) => {
+    if (floor === 'Basement') return 'Basement';
+    if (floor === 'Ground') return 'Ground Floor';
+    return `Floor ${floor}`;
   };
 
   return (
@@ -167,7 +174,7 @@ const Shops = () => {
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate" title={shop.ownerName || 'No Owner'}>{shop.ownerName || 'No Owner'}</h3>
                     <div className="flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 mt-1 gap-3">
                        <span className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300 shrink-0">
-                          <MapPin size={10} /> Floor {shop.floor}
+                          <MapPin size={10} /> {formatFloor(shop.floor)}
                        </span>
                     </div>
                   </div>
@@ -257,15 +264,25 @@ const Shops = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Floor Level</label>
-                  <input 
+                  <select
                     required 
-                    type="number" 
-                    className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium"
+                    className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium appearance-none"
                     value={newShop.floor} 
-                    onFocus={(e) => e.target.select()}
-                    onChange={e => setNewShop({...newShop, floor: e.target.value === '' ? '' : Number(e.target.value) as any})} 
-                    placeholder="e.g. 1" 
-                  />
+                    onChange={e => setNewShop({...newShop, floor: e.target.value})}
+                  >
+                    <option value="Basement">Basement</option>
+                    <option value="Ground">Ground</option>
+                    <option value="1">1st Floor</option>
+                    <option value="2">2nd Floor</option>
+                    <option value="3">3rd Floor</option>
+                    <option value="4">4th Floor</option>
+                    <option value="5">5th Floor</option>
+                    <option value="6">6th Floor</option>
+                    <option value="7">7th Floor</option>
+                    <option value="8">8th Floor</option>
+                    <option value="9">9th Floor</option>
+                    <option value="10">10th Floor</option>
+                  </select>
                 </div>
               </div>
 
