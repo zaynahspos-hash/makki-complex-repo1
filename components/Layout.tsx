@@ -60,7 +60,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <img 
             src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1770670391/shme3oddvvyl7nmcyup5.webp" 
             alt="Plaza Logo" 
-            className="w-10 h-10 rounded-lg object-cover shrink-0 shadow-sm"
+            className="w-14 h-14 rounded-xl object-cover shrink-0 shadow-sm"
           />
           <span className="font-bold text-lg text-gray-800 dark:text-white truncate" title={settings.plazaName}>
             {settings.plazaName || 'Plaza Manager'}
@@ -102,7 +102,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
              <img 
                 src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1770670391/shme3oddvvyl7nmcyup5.webp" 
                 alt="Plaza Logo" 
-                className="w-8 h-8 rounded-lg object-cover shrink-0"
+                className="w-10 h-10 rounded-lg object-cover shrink-0"
              />
              <span className="font-bold text-lg text-gray-800 dark:text-white truncate">
                 {settings.plazaName || 'Plaza'}
