@@ -251,126 +251,128 @@ const Shops = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] transition-colors animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 shrink-0">
-              <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <Store size={20} className="text-blue-600"/>
-                {editingId ? 'Edit Shop Details' : 'Add New Shop'}
-              </h3>
-              <button onClick={() => !isSubmitting && setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-600 rounded-full p-1" disabled={isSubmitting}>
-                <X size={16} />
-              </button>
-            </div>
-            
-            <form onSubmit={handleSaveShop} className="p-6 space-y-4 overflow-y-auto">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Shop Number</label>
-                  <input required type="text" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
-                    value={newShop.shopNumber} onChange={e => setNewShop({...newShop, shopNumber: e.target.value})} placeholder="e.g. 101" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Floor Level</label>
-                  <select
-                    required 
-                    className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium appearance-none"
-                    value={newShop.floor} 
-                    onChange={e => setNewShop({...newShop, floor: e.target.value})}
-                  >
-                    <option value="Basement">Basement</option>
-                    <option value="Ground">Ground</option>
-                    <option value="1">1st Floor</option>
-                    <option value="2">2nd Floor</option>
-                    <option value="3">3rd Floor</option>
-                    <option value="4">4th Floor</option>
-                    <option value="5">5th Floor</option>
-                    <option value="6">6th Floor</option>
-                    <option value="7">7th Floor</option>
-                    <option value="8">8th Floor</option>
-                    <option value="9">9th Floor</option>
-                    <option value="10">10th Floor</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Owner Name</label>
-                <input required type="text" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
-                  value={newShop.ownerName} onChange={e => setNewShop({...newShop, ownerName: e.target.value})} placeholder="Full Name" />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">CNIC (Optional)</label>
-                <input type="text" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
-                  value={newShop.cnic || ''} onChange={e => setNewShop({...newShop, cnic: e.target.value})} placeholder="e.g. 42101-1234567-1" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                 <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Phone</label>
-                  <input required type="tel" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
-                    value={newShop.phone} onChange={e => setNewShop({...newShop, phone: e.target.value})} placeholder="0300..." />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Email (Opt)</label>
-                  <input type="email" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
-                    value={newShop.email} onChange={e => setNewShop({...newShop, email: e.target.value})} placeholder="@gmail.com" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
-                <div>
-                  <label className="block text-xs font-bold text-blue-800 dark:text-blue-300 uppercase mb-1">Rent Amount</label>
-                  <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">Rs.</span>
-                      <input 
-                        required 
-                        type="number" 
-                        className="w-full pl-10 pr-3 py-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-bold" 
-                        value={newShop.monthlyRent} 
-                        onFocus={(e) => e.target.select()}
-                        onChange={e => setNewShop({...newShop, monthlyRent: e.target.value === '' ? '' : Number(e.target.value) as any})} 
-                      />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-blue-800 dark:text-blue-300 uppercase mb-1">Maint. Amount</label>
-                  <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">Rs.</span>
-                      <input 
-                        required 
-                        type="number" 
-                        className="w-full pl-10 pr-3 py-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-bold" 
-                        value={newShop.monthlyMaintenance} 
-                        onFocus={(e) => e.target.select()}
-                        onChange={e => setNewShop({...newShop, monthlyMaintenance: e.target.value === '' ? '' : Number(e.target.value) as any})} 
-                      />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Occupancy Status</label>
-                <div className="flex space-x-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl">
-                   <label className={`flex-1 text-center py-2 rounded-lg text-sm font-medium cursor-pointer transition-all ${newShop.status === 'Occupied' ? 'bg-white dark:bg-gray-600 shadow-sm text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                    <input type="radio" name="status" checked={newShop.status === 'Occupied'} onChange={() => setNewShop({...newShop, status: 'Occupied'})} className="hidden" />
-                    Occupied
-                  </label>
-                  <label className={`flex-1 text-center py-2 rounded-lg text-sm font-medium cursor-pointer transition-all ${newShop.status === 'Vacant' ? 'bg-white dark:bg-gray-600 shadow-sm text-gray-700 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
-                    <input type="radio" name="status" checked={newShop.status === 'Vacant'} onChange={() => setNewShop({...newShop, status: 'Vacant'})} className="hidden" />
-                    Vacant
-                  </label>
-                </div>
-              </div>
-
-              <div className="pt-4 flex gap-3 shrink-0">
-                <button type="button" onClick={() => !isSubmitting && setIsModalOpen(false)} className="flex-1 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" disabled={isSubmitting}>Cancel</button>
-                <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-none transition-colors flex items-center justify-center gap-2" disabled={isSubmitting}>
-                    {isSubmitting ? <Loader2 className="animate-spin" /> : (editingId ? 'Update Shop' : 'Create Shop')}
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg flex flex-col transition-colors animate-in zoom-in-95 duration-200 relative">
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 shrink-0 rounded-t-2xl">
+                <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                  <Store size={20} className="text-blue-600"/>
+                  {editingId ? 'Edit Shop Details' : 'Add New Shop'}
+                </h3>
+                <button onClick={() => !isSubmitting && setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-600 rounded-full p-1" disabled={isSubmitting}>
+                  <X size={16} />
                 </button>
               </div>
-            </form>
+              
+              <form onSubmit={handleSaveShop} className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Shop Number</label>
+                    <input required type="text" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
+                      value={newShop.shopNumber} onChange={e => setNewShop({...newShop, shopNumber: e.target.value})} placeholder="e.g. 101" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Floor Level</label>
+                    <select
+                      required 
+                      className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium appearance-none"
+                      value={newShop.floor} 
+                      onChange={e => setNewShop({...newShop, floor: e.target.value})}
+                    >
+                      <option value="Basement">Basement</option>
+                      <option value="Ground">Ground</option>
+                      <option value="1">1st Floor</option>
+                      <option value="2">2nd Floor</option>
+                      <option value="3">3rd Floor</option>
+                      <option value="4">4th Floor</option>
+                      <option value="5">5th Floor</option>
+                      <option value="6">6th Floor</option>
+                      <option value="7">7th Floor</option>
+                      <option value="8">8th Floor</option>
+                      <option value="9">9th Floor</option>
+                      <option value="10">10th Floor</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Owner Name</label>
+                  <input required type="text" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
+                    value={newShop.ownerName} onChange={e => setNewShop({...newShop, ownerName: e.target.value})} placeholder="Full Name" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">CNIC (Optional)</label>
+                  <input type="text" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
+                    value={newShop.cnic || ''} onChange={e => setNewShop({...newShop, cnic: e.target.value})} placeholder="e.g. 42101-1234567-1" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                   <div>
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Phone</label>
+                    <input required type="tel" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
+                      value={newShop.phone} onChange={e => setNewShop({...newShop, phone: e.target.value})} placeholder="0300..." />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Email (Opt)</label>
+                    <input type="email" className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-medium" 
+                      value={newShop.email} onChange={e => setNewShop({...newShop, email: e.target.value})} placeholder="@gmail.com" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
+                  <div>
+                    <label className="block text-xs font-bold text-blue-800 dark:text-blue-300 uppercase mb-1">Rent Amount</label>
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">Rs.</span>
+                        <input 
+                          required 
+                          type="number" 
+                          className="w-full pl-10 pr-3 py-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-bold" 
+                          value={newShop.monthlyRent} 
+                          onFocus={(e) => e.target.select()}
+                          onChange={e => setNewShop({...newShop, monthlyRent: e.target.value === '' ? '' : Number(e.target.value) as any})} 
+                        />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-blue-800 dark:text-blue-300 uppercase mb-1">Maint. Amount</label>
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">Rs.</span>
+                        <input 
+                          required 
+                          type="number" 
+                          className="w-full pl-10 pr-3 py-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors font-bold" 
+                          value={newShop.monthlyMaintenance} 
+                          onFocus={(e) => e.target.select()}
+                          onChange={e => setNewShop({...newShop, monthlyMaintenance: e.target.value === '' ? '' : Number(e.target.value) as any})} 
+                        />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Occupancy Status</label>
+                  <div className="flex space-x-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl">
+                     <label className={`flex-1 text-center py-2 rounded-lg text-sm font-medium cursor-pointer transition-all ${newShop.status === 'Occupied' ? 'bg-white dark:bg-gray-600 shadow-sm text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <input type="radio" name="status" checked={newShop.status === 'Occupied'} onChange={() => setNewShop({...newShop, status: 'Occupied'})} className="hidden" />
+                      Occupied
+                    </label>
+                    <label className={`flex-1 text-center py-2 rounded-lg text-sm font-medium cursor-pointer transition-all ${newShop.status === 'Vacant' ? 'bg-white dark:bg-gray-600 shadow-sm text-gray-700 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <input type="radio" name="status" checked={newShop.status === 'Vacant'} onChange={() => setNewShop({...newShop, status: 'Vacant'})} className="hidden" />
+                      Vacant
+                    </label>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex gap-3 shrink-0">
+                  <button type="button" onClick={() => !isSubmitting && setIsModalOpen(false)} className="flex-1 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" disabled={isSubmitting}>Cancel</button>
+                  <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-none transition-colors flex items-center justify-center gap-2" disabled={isSubmitting}>
+                      {isSubmitting ? <Loader2 className="animate-spin" /> : (editingId ? 'Update Shop' : 'Create Shop')}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

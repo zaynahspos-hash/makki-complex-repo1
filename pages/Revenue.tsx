@@ -200,22 +200,6 @@ const Revenue = () => {
       showToast("Revenue report downloaded", "success");
   };
 
-  // Helper to safely open picker
-  const openPicker = (ref: React.RefObject<HTMLInputElement>) => {
-    try {
-      if (ref.current) {
-        if ('showPicker' in HTMLInputElement.prototype) {
-          ref.current.showPicker();
-        } else {
-          ref.current.focus();
-        }
-      }
-    } catch (error) {
-      console.log('Picker open failed', error);
-      ref.current?.focus();
-    }
-  };
-
   return (
     <div className="space-y-6 pb-20 md:pb-0">
       
@@ -233,9 +217,9 @@ const Revenue = () => {
       {/* COMPACT FILTER & STATS BAR */}
       <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 transition-colors">
          
-         {/* Date Range Inputs (Compact) */}
-         <div className="flex-1 flex gap-2">
-            <div className="relative flex-1 min-w-0">
+         {/* Date Range Inputs (Grid for better alignment on mobile) */}
+         <div className="flex-1 grid grid-cols-2 gap-3">
+            <div className="relative">
                <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none text-gray-400"><Calendar size={14} /></div>
                <input 
                   ref={startDateRef} 
@@ -251,11 +235,10 @@ const Revenue = () => {
                       console.log('Picker not supported or blocked', error);
                     }
                   }}
-                  className="w-full pl-8 pr-2 py-2 text-xs font-bold border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer min-w-0" 
+                  className="w-full pl-8 pr-2 py-2 text-xs font-bold border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer" 
                 />
             </div>
-            <span className="self-center text-gray-400">-</span>
-            <div className="relative flex-1 min-w-0">
+            <div className="relative">
                <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none text-gray-400"><Calendar size={14} /></div>
                <input 
                   ref={endDateRef} 
@@ -271,7 +254,7 @@ const Revenue = () => {
                       console.log('Picker not supported or blocked', error);
                     }
                   }}
-                  className="w-full pl-8 pr-2 py-2 text-xs font-bold border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer min-w-0" 
+                  className="w-full pl-8 pr-2 py-2 text-xs font-bold border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer" 
                />
             </div>
          </div>
