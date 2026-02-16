@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Save, Building, MapPin, Percent, Users, UserPlus, Trash2, Key, Shield, Loader2, Mail, Check, Edit, Info, Store, Facebook, Instagram, Youtube, User as UserIcon, AlertTriangle, X, Phone, Settings as SettingsIcon, Lock } from 'lucide-react';
@@ -254,7 +255,7 @@ const Settings = () => {
          <div className="space-y-6 animate-in fade-in duration-300">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center">
                 <div className="w-24 h-24 mx-auto mb-6">
-                   <img src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1770670391/shme3oddvvyl7nmcyup5.webp" alt="Plaza Logo" className="w-full h-full object-cover rounded-2xl shadow-md" />
+                   <img src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1771256298/makkicomplex_logo_zi2aux.webp" alt="Plaza Logo" className="w-full h-full object-cover rounded-2xl shadow-md" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Plaza Manager</h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-8">Version 1.2.0 • Build 2026</p>

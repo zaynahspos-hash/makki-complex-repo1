@@ -119,6 +119,7 @@ const Shops = () => {
   const formatFloor = (floor: string) => {
     if (floor === 'Basement' || floor === 'Lower Ground') return 'Lower Ground';
     if (floor === 'Ground') return 'Ground Floor';
+    if (floor === 'Basement Parking' || floor === 'Front Parking') return floor;
     return `Floor ${floor}`;
   };
 
@@ -251,10 +252,10 @@ const Shops = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg flex flex-col transition-colors animate-in zoom-in-95 duration-200 relative">
-              <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 shrink-0 rounded-t-2xl">
+        // Changed to flex container with constrained height for internal scrolling
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg flex flex-col max-h-[90vh] transition-colors animate-in zoom-in-95 duration-200 relative overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 shrink-0">
                 <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
                   <Store size={20} className="text-blue-600"/>
                   {editingId ? 'Edit Shop Details' : 'Add New Shop'}
@@ -264,7 +265,7 @@ const Shops = () => {
                 </button>
               </div>
               
-              <form onSubmit={handleSaveShop} className="p-6 space-y-4">
+              <form onSubmit={handleSaveShop} className="p-6 space-y-4 overflow-y-auto custom-scrollbar">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Shop Number</label>
@@ -281,6 +282,8 @@ const Shops = () => {
                     >
                       <option value="Lower Ground">Lower Ground</option>
                       <option value="Ground">Ground</option>
+                      <option value="Basement Parking">Basement Parking</option>
+                      <option value="Front Parking">Front Parking</option>
                       <option value="1">1st Floor</option>
                       <option value="2">2nd Floor</option>
                       <option value="3">3rd Floor</option>
@@ -373,7 +376,6 @@ const Shops = () => {
                 </div>
               </form>
             </div>
-          </div>
         </div>
       )}
     </div>

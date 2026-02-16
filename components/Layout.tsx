@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Store, DollarSign, Wrench, Settings, LogOut, Menu, User as UserIcon, Moon, Sun, Banknote } from 'lucide-react';
@@ -58,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <aside className="hidden md:flex flex-col w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 fixed h-full z-30 transition-colors duration-200">
         <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center space-x-3">
           <img 
-            src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1770670391/shme3oddvvyl7nmcyup5.webp" 
+            src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1771256298/makkicomplex_logo_zi2aux.webp" 
             alt="Plaza Logo" 
             className="w-14 h-14 rounded-xl object-cover shrink-0 shadow-sm"
           />
@@ -100,7 +101,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 px-4 md:px-8 flex items-center justify-between sticky top-0 z-20 transition-colors duration-200">
           <div className="flex items-center space-x-3 md:hidden overflow-hidden">
              <img 
-                src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1770670391/shme3oddvvyl7nmcyup5.webp" 
+                src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1771256298/makkicomplex_logo_zi2aux.webp" 
                 alt="Plaza Logo" 
                 className="w-10 h-10 rounded-lg object-cover shrink-0"
              />

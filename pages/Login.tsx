@@ -94,7 +94,7 @@ const Login = () => {
         <div className="text-center mb-8">
           <div className="relative inline-block cursor-pointer" onClick={handleLogoClick}>
             <img 
-              src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1770670391/shme3oddvvyl7nmcyup5.webp" 
+              src="https://res.cloudinary.com/dguw4vfjc/image/upload/v1771256298/makkicomplex_logo_zi2aux.webp" 
               alt="Plaza Logo" 
               className="w-24 h-24 rounded-2xl mx-auto mb-6 shadow-lg shadow-blue-200 dark:shadow-none object-cover select-none"
             />
