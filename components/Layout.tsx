@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Store, DollarSign, Wrench, Settings, LogOut, Menu, User as UserIcon, Moon, Sun, Banknote } from 'lucide-react';
@@ -88,8 +87,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         <div className="p-4 border-t border-gray-100 dark:border-gray-700">
           <div className="px-4 py-2 mb-2">
-             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Logged in as</p>
-             <p className="text-sm font-bold text-gray-800 dark:text-white truncate">{user?.displayName}</p>
+             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                 {user?.role === 'admin' ? 'Super Admin Account' : 'Staff Member'}
+             </p>
+             <p className="text-sm font-bold text-gray-800 dark:text-white truncate">
+                 {user?.displayName || (user?.role === 'admin' ? 'Super Admin' : 'Staff')}
+             </p>
           </div>
         </div>
       </aside>
@@ -132,14 +135,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                  className="flex items-center space-x-2 focus:outline-none"
               >
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:ring-2 hover:ring-blue-200 dark:hover:ring-blue-900 transition-all">
-                  {user?.displayName?.[0] || 'U'}
+                  {user?.displayName?.[0] || (user?.role === 'admin' ? 'A' : 'S')}
                 </div>
               </button>
 
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-1 z-50 transform origin-top-right transition-all">
                   <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.displayName}</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                        {user?.displayName || (user?.role === 'admin' ? 'Super Admin' : 'Staff Member')}
+                    </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
                   </div>
                   

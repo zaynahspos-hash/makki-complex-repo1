@@ -1,11 +1,10 @@
-
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { CalendarPlus, Wallet, AlertCircle, CheckCircle, MessageCircle, History, User, Search, Filter, Clock, ChevronRight, ChevronUp, ChevronDown, Calendar, Download, FilePlus, Check, DollarSign } from 'lucide-react';
+import { Wallet, AlertCircle, CheckCircle, MessageCircle, History, User, Search, Filter, Clock, ChevronRight, ChevronUp, ChevronDown, Calendar, Download, FilePlus, Check, DollarSign } from 'lucide-react';
 import { MaintenanceCollection, PaymentTransaction } from '../types';
 
 const Maintenance = () => {
-  const { maintenanceCollections, shops, addMaintenancePayment, generateMonthlyMaintenance, createMaintenanceBill, settings, showToast, user } = useApp();
+  const { maintenanceCollections, shops, addMaintenancePayment, createMaintenanceBill, settings, showToast, user } = useApp();
 
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,12 +72,6 @@ const Maintenance = () => {
     const [y, m] = dateStr.split('-');
     const date = new Date(parseInt(y), parseInt(m) - 1);
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-  };
-
-  const handleGenerateDues = () => {
-    if(confirm(`Generate MAINTENANCE bills for ${formatDate(selectedMonth)}?`)) {
-        generateMonthlyMaintenance(selectedMonth);
-    }
   };
 
   const handleCreateSingleBill = async (shopId: string) => {
@@ -232,9 +225,6 @@ ${record.status === 'Paid' ? '✅ *PAID IN FULL*' : '⚠️ *PAYMENT PENDING*'}
             </div>
             <button onClick={() => { setIsExportModalOpen(true); setExportSelectedShops(['all']); setExportShopSearch(''); }} className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap shadow-sm">
                 <Download size={16} /> <span className="hidden sm:inline">Export</span>
-            </button>
-            <button onClick={handleGenerateDues} className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap shadow-sm">
-                <CalendarPlus size={16} /> Generate
             </button>
            </div>
         </div>

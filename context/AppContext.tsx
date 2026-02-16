@@ -143,7 +143,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setUser({
                uid: firebaseUser.uid,
                email: firebaseUser.email || '',
-               displayName: firebaseUser.displayName || 'User',
+               displayName: firebaseUser.displayName || 'Super Admin',
                role: 'admin',
                permissions: allPerms
             });
@@ -155,7 +155,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
            setUser({
              uid: firebaseUser.uid,
              email: firebaseUser.email || '',
-             displayName: 'User',
+             displayName: 'Super Admin',
              role: 'admin',
              permissions: ['dashboard', 'shops', 'rent', 'maintenance', 'settings']
            });

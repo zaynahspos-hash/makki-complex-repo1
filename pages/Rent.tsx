@@ -1,11 +1,10 @@
-
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { DollarSign, CheckCircle, AlertCircle, Clock, CalendarPlus, MessageCircle, Wallet, History, Search, Filter, User, Calendar, ChevronDown, ChevronUp, Download, FilePlus, Check } from 'lucide-react';
+import { DollarSign, CheckCircle, AlertCircle, Clock, MessageCircle, Wallet, History, Search, Filter, User, Calendar, ChevronDown, ChevronUp, Download, FilePlus, Check } from 'lucide-react';
 import { RentRecord, PaymentTransaction } from '../types';
 
 const Rent = () => {
-  const { rentRecords, shops, addRentPayment, generateMonthlyRent, createRentBill, settings, showToast, user } = useApp();
+  const { rentRecords, shops, addRentPayment, createRentBill, settings, showToast, user } = useApp();
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   
   // Search & Filter State
@@ -91,12 +90,6 @@ const Rent = () => {
     if (floor === 'Ground') return 'Ground Floor';
     if (floor === 'Basement Parking' || floor === 'Front Parking') return floor;
     return `Floor ${floor}`;
-  };
-
-  const handleGenerateDues = () => {
-    if(confirm(`Generate RENT bills for all occupied shops for ${formatDate(selectedMonth)}?`)) {
-        generateMonthlyRent(selectedMonth);
-    }
   };
 
   const handleCreateSingleBill = async (shopId: string) => {
@@ -263,9 +256,6 @@ ${record.status === 'Paid' ? '✅ *PAID IN FULL*' : '⚠️ *PAYMENT PENDING*'}
               </div>
               <button onClick={() => { setIsExportModalOpen(true); setExportSelectedShops(['all']); setExportShopSearch(''); }} className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap shadow-sm">
                   <Download size={16} /> <span className="hidden sm:inline">Export</span>
-              </button>
-              <button onClick={handleGenerateDues} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap shadow-sm">
-                  <CalendarPlus size={16} /> <span className="hidden sm:inline">Generate All</span>
               </button>
           </div>
         </div>
