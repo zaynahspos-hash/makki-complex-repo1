@@ -117,7 +117,7 @@ const Shops = () => {
   };
 
   const formatFloor = (floor: string) => {
-    if (floor === 'Basement') return 'Basement';
+    if (floor === 'Basement' || floor === 'Lower Ground') return 'Lower Ground';
     if (floor === 'Ground') return 'Ground Floor';
     return `Floor ${floor}`;
   };
@@ -279,7 +279,7 @@ const Shops = () => {
                       value={newShop.floor} 
                       onChange={e => setNewShop({...newShop, floor: e.target.value})}
                     >
-                      <option value="Basement">Basement</option>
+                      <option value="Lower Ground">Lower Ground</option>
                       <option value="Ground">Ground</option>
                       <option value="1">1st Floor</option>
                       <option value="2">2nd Floor</option>

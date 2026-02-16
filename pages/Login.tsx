@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
@@ -18,6 +19,7 @@ const Login = () => {
   // Forgot Password State
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
+  const [isResetLoading, setIsResetLoading] = useState(false);
   
   const { login, signup, resetUserPassword, user } = useApp();
   const navigate = useNavigate();
@@ -60,12 +62,17 @@ const Login = () => {
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if(!resetEmail) return;
+    setIsResetLoading(true);
     try {
       await resetUserPassword(resetEmail.trim());
       setIsForgotModalOpen(false);
       setResetEmail('');
     } catch (err: any) {
-      alert("Failed to send reset email. Please check if the email is correct.");
+      // Error is handled in AppContext with showToast. 
+      // We log here for debug but suppress the native alert to avoid bad UX.
+      console.error("Forgot Password Error:", err);
+    } finally {
+      setIsResetLoading(false);
     }
   };
 
@@ -205,7 +212,7 @@ const Login = () => {
 
       {/* Forgot Password Modal */}
       {isForgotModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6 relative">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Reset Password</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Enter your email to receive a password reset link.</p>
@@ -222,16 +229,18 @@ const Login = () => {
                  <div className="flex gap-2 justify-end">
                     <button 
                       type="button" 
-                      onClick={() => setIsForgotModalOpen(false)}
-                      className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                      onClick={() => !isResetLoading && setIsForgotModalOpen(false)}
+                      disabled={isResetLoading}
+                      className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg disabled:opacity-50"
                     >
                       Cancel
                     </button>
                     <button 
                       type="submit"
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                      disabled={isResetLoading}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-70"
                     >
-                      Send Link <ArrowRight size={16} />
+                      {isResetLoading ? <Loader2 className="animate-spin" size={16}/> : <>Send Link <ArrowRight size={16} /></>}
                     </button>
                  </div>
               </form>

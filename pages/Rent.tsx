@@ -87,7 +87,7 @@ const Rent = () => {
   };
 
   const formatFloor = (floor: string) => {
-    if (floor === 'Basement') return 'Basement';
+    if (floor === 'Basement' || floor === 'Lower Ground') return 'Lower Ground';
     if (floor === 'Ground') return 'Ground Floor';
     return `Floor ${floor}`;
   };
